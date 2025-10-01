@@ -1,0 +1,154 @@
+---
+title: "LFS_prop_test"
+output: html_document
+date: "2025-10-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```{r}
+lfsPRE.df = rbind(lfsJul2Dec23ABSK, lfsJan2Jun24ABSK)
+head(lfsPRE.df, 5)
+tail(lfsPRE.df, 5)
+```
+```{r}
+lfsPOST.df = rbind(lfsJul2Dec24ABSK, lfsJan2Jun25ABSK)
+head(lfsPOST.df, 5)
+tail(lfsPOST.df, 5)
+```
+```{r}
+lfsSKPRE.df = lfsPRE.df %>%
+  filter(PROV == 47)
+head(lfsSKPRE.df, 5)
+tail(lfsSKPRE.df, 5)
+```
+```{r}
+lfsSKPOST.df = lfsPOST.df %>%
+  filter(PROV == 47)
+head(lfsSKPOST.df, 5)
+tail(lfsSKPOST.df, 5)
+```
+```{r}
+lfsABPRE.df = lfsPRE.df %>%
+  filter(PROV == 48)
+head(lfsABPRE.df, 5)
+tail(lfsABPRE.df, 5)
+```
+```{r}
+lfsABPOST.df = lfsPOST.df %>%
+  filter(PROV == 48)
+head(lfsABPOST.df, 5)
+tail(lfsABPOST.df, 5)
+
+```
+```{r}
+xunempSKPRE = sum(lfsSKPRE.df$LFSSTAT == 3)
+xunempSKPRE
+nunempSKPRE = nrow(lfsSKPRE.df)
+nunempSKPRE
+propunempSKPRE = xunempSKPRE / nunempSKPRE
+propunempSKPRE
+
+```
+```{r}
+xunempSKPOST = sum(lfsSKPOST.df$LFSSTAT == 3)
+xunempSKPOST
+nunempSKPOST = nrow(lfsSKPOST.df)
+nunempSKPOST
+propunempSKPOST = xunempSKPOST / nunempSKPOST
+propunempSKPOST
+
+```
+```{r}
+propunempSKdiff = propunempSKPOST - propunempSKPRE
+```
+```{r}
+prop.test(c(xunempSKPOST + 1, xunempSKPRE + 1), c(nunempSKPOST + 2, nunempSKPRE + 2), alternative = "greater", correct = FALSE)
+```
+```{r}
+prop.test(c(xunempSKPOST + 1, xunempSKPRE + 1), c(nunempSKPOST + 2, nunempSKPRE + 2), conf.level = 0.95, correct = FALSE)
+```
+```{r}
+xunempABPRE = sum(lfsABPRE.df$LFSSTAT == 3)
+xunempABPRE
+nunempABPRE = nrow(lfsABPRE.df)
+nunempABPRE
+propunempABPRE = xunempABPRE / nunempABPRE
+propunempABPRE
+```
+```{r}
+xunempABPOST = sum(lfsABPOST.df$LFSSTAT == 3)
+xunempABPOST
+nunempABPOST = nrow(lfsABPOST.df)
+nunempABPOST
+propunempABPOST = xunempABPOST / nunempABPOST
+propunempABPOST
+
+```
+```{r}
+propunempABdiff = propunempABPOST - propunempABPRE
+propunempABdiff
+```
+```{r}
+prop.test(c(xunempABPOST + 1, xunempABPRE + 1), c(nunempABPOST + 2, nunempABPRE + 2), alternative = "greater", correct = FALSE)
+```
+```{r}
+prop.test(c(xunempABPOST + 1, xunempABPRE + 1), c(nunempABPOST + 2, nunempABPRE + 2), conf.level = 0.95, correct = FALSE)
+```
+
+
+
+```{r}
+xempSKPRE = sum(lfsSKPRE.df$LFSSTAT == 1 | lfsSKPRE.df$LFSSTAT == 2)
+xempSKPRE
+nempSKPRE = nrow(lfsSKPRE.df)
+nempSKPRE
+propempSKPRE = xempSKPRE / nempSKPRE
+propempSKPRE
+```
+
+```{r}
+xempSKPOST = sum(lfsSKPOST.df$LFSSTAT == 1 | lfsSKPOST.df$LFSSTAT == 2)
+xempSKPOST
+nempSKPOST = nrow(lfsSKPOST.df)
+nempSKPOST
+propempSKPOST = xempSKPOST / nempSKPOST
+propempSKPOST
+```
+
+```{r}
+propempSKdiff = propempSKPOST - propempSKPRE
+propempSKdiff
+```
+```{r}
+prop.test(c(xempSKPOST + 1, xempSKPRE + 1), c(nempSKPOST + 2, nempSKPRE + 2), alternative = "less", correct = FALSE)
+```
+
+```{r}
+xempABPRE = sum(lfsABPRE.df$LFSSTAT == 1 | lfsABPRE.df$LFSSTAT == 2)
+xempABPRE
+nempABPRE = nrow(lfsABPRE.df)
+nempABPRE
+propempABPRE = xempABPRE / nempABPRE
+propempABPRE
+```
+
+```{r}
+xempABPOST = sum(lfsABPOST.df$LFSSTAT == 1 | lfsABPOST.df$LFSSTAT == 2)
+xempABPOST
+nempABPOST = nrow(lfsABPOST.df)
+nempABPOST
+propempABPOST = xempABPOST / nempABPOST
+propempABPOST
+```
+
+```{r}
+prop.test(c(xempABPOST + 1, xempABPRE + 1), c(nempABPOST + 2, nempABPRE + 2), alternative = "less", correct = FALSE)
+```
+

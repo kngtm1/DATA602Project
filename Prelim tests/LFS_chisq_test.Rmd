@@ -1,0 +1,114 @@
+---
+title: "LFS_chisquare_test"
+output: html_document
+date: "2025-10-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+lfsPRE.df = rbind(lfsJul2Dec23ABSK, lfsJan2Jun24ABSK)
+head(lfsPRE.df, 5)
+tail(lfsPRE.df, 5)
+```
+
+
+```{r}
+lfsPOST.df = rbind(lfsJul2Dec24ABSK, lfsJan2Jun25ABSK)
+head(lfsPOST.df, 5)
+tail(lfsPOST.df, 5)
+```
+
+```{r}
+lfsSKPRE.df = lfsPRE.df %>%
+  filter(PROV == 47)
+head(lfsSKPRE.df, 5)
+tail(lfsSKPRE.df, 5)
+```
+
+```{r}
+lfsSKPOST.df = lfsPOST.df %>%
+  filter(PROV == 47)
+head(lfsSKPOST.df, 5)
+tail(lfsSKPOST.df, 5)
+```
+
+
+```{r}
+lfsABPRE.df = lfsPRE.df %>%
+  filter(PROV == 48)
+head(lfsABPRE.df, 5)
+tail(lfsABPRE.df, 5)
+```
+
+
+```{r}
+lfsABPOST.df = lfsPOST.df %>%
+  filter(PROV == 48)
+head(lfsABPOST.df, 5)
+tail(lfsABPOST.df, 5)
+```
+
+```{r}
+unempSKPRE = sum(lfsSKPRE.df$LFSSTAT == 3)
+unempSKPRE
+empSKPRE = sum(lfsSKPRE.df$LFSSTAT == 1 | lfsSKPRE.df$LFSSTAT == 2)
+empSKPRE
+notlabSKPRE = sum(lfsSKPRE.df$LFSSTAT == 4)
+notlabSKPRE
+```
+
+```{r}
+unempABPRE = sum(lfsABPRE.df$LFSSTAT == 3)
+unempABPRE
+empABPRE = sum(lfsABPRE.df$LFSSTAT == 1 | lfsABPRE.df$LFSSTAT == 2)
+empABPRE
+notlabABPRE = sum(lfsABPRE.df$LFSSTAT == 4)
+notlabABPRE
+```
+
+```{r}
+empABSKPRE.crosstab = rbind(c(unempSKPRE, empSKPRE, notlabSKPRE), c(unempABPRE, empABPRE, notlabABPRE))
+rownames(empABSKPRE.crosstab) = c("Saskatchewan", "Alberta")
+colnames(empABSKPRE.crosstab) = c("Unemployed", "Employed", "Not in Labour Force")
+empABSKPRE.crosstab
+
+```
+
+```{r}
+xchisq.test(empABSKPRE.crosstab, correct = FALSE)
+```
+
+```{r}
+unempSKPOST = sum(lfsSKPOST.df$LFSSTAT == 3)
+unempSKPOST
+empSKPOST = sum(lfsSKPOST.df$LFSSTAT == 1 | lfsSKPOST.df$LFSSTAT == 2)
+empSKPOST
+notlabSKPOST = sum(lfsSKPOST.df$LFSSTAT == 4)
+notlabSKPOST
+```
+
+```{r}
+unempABPOST = sum(lfsABPOST.df$LFSSTAT == 3)
+unempABPOST
+empABPOST = sum(lfsABPOST.df$LFSSTAT == 1 | lfsABPOST.df$LFSSTAT == 2)
+empABPOST
+notlabABPOST = sum(lfsABPOST.df$LFSSTAT == 4)
+notlabABPOST
+```
+
+```{r}
+empABSKPOST.crosstab = rbind(c(unempSKPOST, empSKPOST, notlabSKPOST), c(unempABPOST, empABPOST, notlabABPOST))
+rownames(empABSKPOST.crosstab) = c("Saskatchewan", "Alberta")
+colnames(empABSKPOST.crosstab) = c("Unemployed", "Employed", "Not in Labour Force")
+empABSKPOST.crosstab
+```
+
+```{r}
+xchisq.test(empABSKPOST.crosstab, correct = FALSE)
+```
+
