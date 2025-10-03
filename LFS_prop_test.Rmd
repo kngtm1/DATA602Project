@@ -1,0 +1,336 @@
+---
+title: "LFS_prop_test"
+output: html_document
+date: "2025-10-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## 
+
+## Guiding Question #2 - Has youth employment in Saskatchewan decreased since the announcement of an increase in minimum wage?
+
+## Motivation and Statistical Hypothesis
+
+The relationship between minimum wage and youth employment is highly contested within the field of economics. Classical economic theory suggests that increases to minimum wage have a negative impact on youth employment. This theory suggests that when employers are required to pay a higher minimum wage, they will be more likely to reduce their number of employees. The negative impact of minimum wage increases is thought to be felt most strongly by youth who, as relatively inexperienced workers, are more likely to earn minimum wage.
+
+In July 2024, the government of Saskatchewan announced an increase to the minimum wage from \$14 per hour to \$15 per hour. According to classical economic theory, this announced increase in minimum wage should have led to a decrease in youth employment.
+
+We are going to test this prediction, by testing whether the proportion of youth who were employed after the announcement of the minimum wage increase is less than the proportion of youth who were employed before the announcement. In evaluating this prediction, we will test the following statistical hypothesis:
+
+$$
+H_0: p_{employSKpost}-p_{employSKpre}\geq 0
+$$
+
+$$
+H_A: p_{employSKpost}-p_{employSKpre}< 0
+$$
+
+In our analysis, we are defining youth as aged 15 to 24 years. We are defining the pre-treatment period as July 2023 to June 2024 and the post-treatment period as July 2024 to June 2025. This allows us to study a full 12 months before and after the announcement of minimum wage increase. We decided to define the pre and post treatment period based on the date of the announcement of the minimum wage increase rather than the date where the minimum wage would came into effect. We made this decision based on the idea that employers would seek to reduce their number of employees *before* the increased minimum wage came into effect. We will define youth who are employed as youth who are employed and present at work or youth who are employed and absent from work during the time that they were surveyed.
+
+We will also conduct the same test on Alberta for the same time period. The minimum wage in Alberta has been constant at \$15 for this time period. Since the minimum wage has remained constant, we do not expect to to see a difference in the proportion of youth who are employed in the post and pre treatment time frame. However, we will conduct the test on Alberta as a form of comparison to see if we see a similar trend in Alberta as we do in Saskatchewan. If we see a similar change in both Alberta and Saskatchewan, than any change in employment is likely due to other economic factors and not due to a change in minimum wage. The statistical hypothesis we will test for Alberta is:
+
+$$
+H_0: p_{employABpost}-p_{employABpre}\geq 0
+$$
+
+$$
+H_A: p_{employABpost}-p_{employABpre}< 0
+$$
+
+It is important to note that for Alberta, pre and post treatment simply refers to the same time period as Saskatchewan's pre and post treatment. Since minimum wage remained steady for the entire time period, there is no treatment condition for Alberta.
+
+In testing both hypotheses, we will use a value of $\alpha = 0.05$.
+
+## Data Preparation
+
+To aid in the analysis of comparing Alberta and Saskatchewan pre- and post-treatment, we will create four separate data frames: Saskatchewan pre-treatment, Saskatchewan post-treatment, Alberta pre-treatment, and Alberta post-treatment.
+
+```{r}
+# creates a pre-treatment data set for July 2023 to June 2024
+lfsPRE.df = rbind(lfsJul2Dec23ABSK, lfsJan2Jun24ABSK)
+```
+
+```{r}
+# creates a post-treatment data set for July 2024 to June 2025
+lfsPOST.df = rbind(lfsJul2Dec24ABSK, lfsJan2Jun25ABSK)
+```
+
+```{r}
+# creates pre-treatment data set for Saskatchewan
+lfsSKPRE.df = lfsPRE.df %>%
+  filter(PROV == 47)
+```
+
+```{r}
+# creates post-treatment data set for Saskatchewan
+lfsSKPOST.df = lfsPOST.df %>%
+  filter(PROV == 47)
+```
+
+```{r}
+# creates pre-treatment data set for Alberta
+lfsABPRE.df = lfsPRE.df %>%
+  filter(PROV == 48)
+```
+
+```{r}
+# creates post-treatment data set for Alberta
+lfsABPOST.df = lfsPOST.df %>%
+  filter(PROV == 48)
+```
+
+## Data Visualization
+
+```{r}
+# adds a column to the dataframe for pre or post
+lfsSKPRE.df$period = "PRE"
+lfsSKPOST.df$period = "POST"
+# creates a dataframe for Saskatchewan for both time periods
+lfsSK.df = rbind(lfsSKPRE.df, lfsSKPOST.df)
+# adds a column to the dataframe for employed or not employed
+lfsSK.df$employ = ifelse(lfsSK.df$LFSSTAT == "1" |lfsSK.df$LFSSTAT == "2", "Employed", "Not Employed")
+# adds a column with Saskatchewan to the datafram
+lfsSK.df$provname = "Saskatchewan"
+```
+
+```{r}
+# adds a column to the dataframe for pre or post
+lfsABPRE.df$period = "PRE"
+lfsABPOST.df$period = "POST"
+# creates a dataframe for Alberta for both time periods
+lfsAB.df = rbind(lfsABPRE.df, lfsABPOST.df)
+# adds a column to the dataframe for employed or not employed
+lfsAB.df$employ = ifelse(lfsAB.df$LFSSTAT == "1" |lfsAB.df$LFSSTAT == "2", "Employed", "Not Employed")
+# adds a column with Alberta to the dataframe
+lfsAB.df$provname = "Alberta"
+```
+
+```{r}
+lfs.df = rbind(lfsSK.df, lfsAB.df)
+```
+
+To helps us get a sense of whether youth employment decreased in the year before and year after Saskatchewan's announcement of a minimum wage increase, we will plot a side by side proportion bar graph for youth employment for both the pre- and post-announcement period for both Alberta and Saskatchewan.
+
+```{r}
+# plots the proportion of employed youth pre and post announcement for Alberta and Saskatchewan
+ggplot(data=lfs.df, aes(x=period, fill = employ)) + geom_bar(position = "fill", na.rm=TRUE) + xlab("Time Period") + ylab("Proportion") + ggtitle("Proportion of Employed Youth by Time Period and Province") + facet_wrap(~provname)
+```
+
+The above visualization shows the proportion of youth who were employed at the time surveyed. Pink represents the proportion of youth who are employed, and blue represents the proportion of youth who are unemployed. POST represents the 12 months after the announcement of the minimum wage increase and PRE represents the 12 months before the announcement.
+
+For both Alberta and Saskatchewan, the proportion of youth who are employed appears to be very similar for the pre- and post-announcement time periods. As a result, from this visualization it seems unlikely that we will find evidence of a statistically significant decrease in youth employment for either province. Comparing the two provinces in the visualization, Saskatchewan appears to have a slightly higher youth employment rate than Alberta.
+
+## Condition Checking
+
+Our variable of interest is youth employment. Since our data set records information at the individual level, employment is a categorical variable. In the data set, any one individual can be classified as employed (at work), employed (absent from work), unemployed, and not in the labour force. As a result of the categorical nature of this variable, the statistic of interest will be the proportion of youth who are employed.
+
+To test the difference in proportion of youth who are employed pre and post treatment, we will conduct a proportion test which relies on the normal distribution. For such a test to be appropriate, both samples must meet the following conditions: $np\geq 10$ and $n(1-p)\geq 10$.
+
+For Saskatchewan pre-treatment, we calculate the value of $np$ and $n(1-p)$ below:
+
+```{r}
+# calculates number of employed youth surveyed in Saskatchewan pre-treatment
+xempSKPRE = sum(lfsSKPRE.df$LFSSTAT == 1 | lfsSKPRE.df$LFSSTAT == 2)
+xempSKPRE
+# calculates total number of youth surveyed in Saskatchewan pre-treatment
+nempSKPRE = nrow(lfsSKPRE.df)
+nempSKPRE
+# calculates proportion of youth who are employed in Saskatchewan pre-treatment
+propempSKPRE = xempSKPRE / nempSKPRE
+propempSKPRE
+# calculates the value of np for Saskatchewan pre-treatment
+npSKPRE = nempSKPRE * propempSKPRE
+npSKPRE
+# calculates the value of n(1-p) for Saskatchewan pre-treatment
+nqSKPRE = nempSKPRE *(1 - propempSKPRE)
+nqSKPRE
+```
+
+From above, the value of $np$ for Saskatchewan pre-treatment is 5472, and the value of $n(1-p)$ is 4798. As a result, the condition for conducting a proportion test is met for Saskatchewan pre-treatment.
+
+For Saskatchewan post-treatment, we calculate the value of $np$ and $n(1-p)$ below:
+
+```{r}
+# calculates number of employed youth surveyed in Saskatchewan post-treatment
+xempSKPOST = sum(lfsSKPOST.df$LFSSTAT == 1 | lfsSKPOST.df$LFSSTAT == 2)
+xempSKPOST
+# calculates total number of youth surveyed in Saskatchewan post-treatment
+nempSKPOST = nrow(lfsSKPOST.df)
+nempSKPOST
+# calculates proportion of youth who are employed in Saskatchewan post-treatment
+propempSKPOST = xempSKPOST / nempSKPOST
+propempSKPOST
+# calculates the value of np for Saskatchewan post-treatment
+npSKPOST = nempSKPOST * propempSKPOST
+npSKPOST
+# calculates the value of n(1-p) for Saskatchewan post-treatment
+nqSKPOST = nempSKPOST *(1 - propempSKPOST)
+nqSKPOST
+```
+
+From above, the value of $np$ for Saskatchewan post-treatment is 6079, and the value of $n(1-p)$ is 5457. As a result, the condition for conducting a proportion test is met for Saskatchewan post-treatment.
+
+Next, we will check the same conditions for Alberta pre and post treatment.
+
+```{r}
+# calculates number of employed youth surveyed in Alberta pre-treatment
+xempABPRE = sum(lfsABPRE.df$LFSSTAT == 1 | lfsABPRE.df$LFSSTAT == 2)
+xempABPRE
+# calculates total number of youth surveyed in Alberta pre-treatment
+nempABPRE = nrow(lfsABPRE.df)
+nempABPRE
+# calculates proportion of youth who are employed in Alberta pre-treatment
+propempABPRE = xempABPRE / nempABPRE
+propempABPRE
+# calculates the value of np for Alberta pre-treatment
+npABPRE = nempABPRE * propempABPRE
+npABPRE
+# calculates the value of n(1-p) for Alberta pre-treatment
+nqABPRE = nempABPRE *(1 - propempABPRE)
+nqABPRE
+```
+
+From above, the value of $np$ for Alberta pre-treatment is 7263, and the value of $n(1-p)$ is 6902. As a result, the condition for conducting a proportion test is met for Alberta pre-treatment.
+
+Lastly, we check the condition for Alberta post-treatment.
+
+```{r}
+# calculates number of employed youth surveyed in Alberta post-treatment
+xempABPOST = sum(lfsABPOST.df$LFSSTAT == 1 | lfsABPOST.df$LFSSTAT == 2)
+xempABPOST
+# calculates total number of youth surveyed in Alberta post-treatment
+nempABPOST = nrow(lfsABPOST.df)
+nempABPOST
+# calculates proportion of youth who are employed in Alberta post-treatment
+propempABPOST = xempABPOST / nempABPOST
+propempABPOST
+# calculates the value of np for Alberta post-treatment
+npABPOST = nempABPOST * propempABPOST
+npABPOST
+# calculates the value of n(1-p) for Alberta post-treatment
+nqABPOST = nempABPOST *(1 - propempABPOST)
+nqABPOST
+```
+
+From above, the value of $np$ for Alberta post-treatment is 7419, and the value of $n(1-p)$ is 7033. As a result, the condition for conducting a proportion test is met for Alberta post-treatment.
+
+The condition $np\geq 10$ and $n(1-p)\geq 10$ has been met for both Saskatchewan and Alberta for both the pre- and post-treatment time periods. As a result, the necessary conditions have been met to conduct a difference of proportions test for both Saskatchewan and Alberta.
+
+## Data Analysis
+
+Now that the conditions have been met, we are ready to conduct a proportion test for Saskatchewan pre and post treatment. First, we will calculate the sample difference in proportions for youth employment for between the post- and pre-announcement time periods.
+
+```{r}
+# calculates difference in proportion for youth employment post and pre treatment
+propempSKdiff = propempSKPOST - propempSKPRE
+propempSKdiff
+```
+
+From above, the difference in the sample proportion for youth employment in Saskatchewan was about -0.0059. In other words, youth employment decreased by 0.59 percentage points after the announcement of the increase in minimum wage in those sampled in the survey.
+
+Next, we will use a proportion test to see whether this decrease represents statistically significant evidence of a decrease in proportion. In conducting the proportion test, we will calculate the p-value. The p-value represents the probability of getting another two samples of the same size with a difference of proportion that is less than or equal to the difference in proportion we found, given that there is no actual difference in the population proportions. This probability can be stated as:
+
+$$
+p-value = P(\hat p_{empSKpost} - \hat p_{empSKpre} \leq -0.0059 | p_{empSKpost} - p_{empSKpre} = 0)
+$$
+
+```{r}
+# conducts a left sided proportion test on the difference in employment post and pre treatment
+prop.test(c(xempSKPOST + 1, xempSKPRE + 1), c(nempSKPOST + 2, nempSKPRE + 2), alternative = "less", correct = FALSE)
+```
+
+```{r}
+# calculates the observed value of z by square rooting the value of chi-squared
+# the observed difference in proportions is negative, so z observed is negative as well
+zobsSK = -1 *sqrt(0.74734)
+zobsSK
+```
+
+From above, the observed value of the test statistic is $z_{obsv}\approx -0.8645$, and the p-value for this test is 0.1937. This means that if there is no actual difference in proportions, the probability of getting another two samples with a difference in proportion of less than or equal to the difference in proportion we found is 0.1937. This p-value is greater than our stated value of $\alpha = 0.05$. As a result, $p-value > \alpha$, and we fail to reject the null hypothesis. Therefore, we do not have statistically significant evidence of a decrease in youth employment in Saskatchewan after the announcement of an increase in minimum wage.
+
+To further investigate the difference in proportions in youth employment before and after the announcement of a minimum wage increase, we will calculate the 95% confidence interval for $p_{empSKpost} - p_{empSKpre}$.
+
+```{r}
+# calculates the 95% confidence interval for the difference in proportions
+prop.test(c(xempSKPOST + 1, xempSKPRE + 1), c(nempSKPOST + 2, nempSKPRE + 2), conf.level = 0.95, correct = FALSE)$conf
+```
+
+From above, the 95% confidence interval is:
+
+$$
+-0.0191 \leq p_{empSKpost} - p_{empSKpre} \leq 0.0074
+$$
+
+This confidence interval tells us that we can be 95% confident that the true difference in population proportion for Saskatchewan before and after the announcement of a minimum wage increase is -0.0191 and 0.0074. In other words, if we were to repeat this study many times, the confidence interval we would create would capture the true difference in population proportion 95% of the time. Since the above confidence interval captures the value of 0, we cannot be 95% confident that there has been a decrease in the true proportion of youth who are employed after the announcement of a minimum wage increase in Saskatchewan.
+
+As a comparison, we will conduct the a proportion test for the same time period for Alberta. The minimum wage remained constant in Alberta during this time period, so we do not expect to to see a difference in the proportion of youth who are employed in the post and pre treatment time frame. In this test, post and pre treatment simply refers to the same time period as pre and post treatment in Saskatchewan. Again, we will start by calculating the sample difference in proportions for youth employment in Alberta for the post and pre treatment time period.
+
+```{r}
+# calculates difference in proportion for youth employment post and pre treatment
+propempABdiff = propempABPOST - propempABPRE
+propempABdiff
+```
+
+From the calculation above, the difference in the sample proportion for youth employment in Alberta was about -0.0006. In other words, youth employment decreased by 0.06 percentage points during the same time period as the post and pre treatment period in Saskatchewan.
+
+```{r}
+# conducts a left sided proportion test on the difference in employment post and pre treatment
+prop.test(c(xempABPOST + 1, xempABPRE + 1), c(nempABPOST + 2, nempABPRE + 2), alternative = "less", correct = FALSE)
+```
+
+```{r}
+# calculates the observed value of z by square rooting the value of chi-squared
+# the observed difference in proportions is negative, so z observed is negative as well
+zobsAB = -1 *sqrt(0.01072)
+zobsAB
+```
+
+From the above calculations, the the value of the test statistic is $z_{obsv}\approx-0.1035$. The p-value for the test is 0.5412. This means that if there is no actual difference in proportions, the probability of getting another two samples with a difference in proportion of less than or equal to the difference in proportion we found is 0.5412. This p-value is greater than our stated value of $\alpha = 0.05$. As a result, $p-value > \alpha$, and we fail to reject the null hypothesis. As a result, we do not have statistically significant evidence of decrease in youth employment in this time period.
+
+To further investigate whether there has been a decrease in youth employment in this time period, we will calculate the 95% confidence interval for $p_{empABpost} - p_{empABpre}$.
+
+```{r}
+# calculates the 95% confidence interval for the difference in proportions
+prop.test(c(xempABPOST + 1, xempABPRE + 1), c(nempABPOST + 2, nempABPRE + 2), conf.level = 0.95, correct = FALSE)
+```
+
+From above, the 95% confidence interval is:
+
+$$
+-0.0110 \leq p_{empABpost} - p_{empABpre} \leq 0.0122
+$$
+
+As a result, we can be 95% confident that the true difference in population proportion for youth employment in Alberta in this time period is between -0.0110 and 0.0122. In other words, if this same survey was repeated over and over again, 95% of the time the confidence interval created would capture the true difference in population proportion. This confidence interval captures the value of 0. As a result, we cannot be 95% confident that there has been a decrease in the true proportion of youth who are employed during this time period in Alberta.
+
+## Inferences and Conclusion
+
+For the hypothesis:
+
+$$
+H_0: p_{employSKpost}-p_{employSKpre}\geq 0
+$$
+
+$$
+H_A: p_{employSKpost}-p_{employSKpre}< 0
+$$
+
+the p-value for the test was 0.1937. Since 0.1937 is greater than our stated value of $\alpha = 0.05$, we failed to reject the null hypothesis. As a result, we were not able to conclude that there was a statistically significant decrease in youth employment in Saskatchewan after the announcement of an increase in minimum wage. As a result, our findings do not appear to support the economic theory that increases to minimum wage have a negative impact on youth employment. There was a slight decrease in the observed sample proportion for youth employment in Saskatchewan after the announcement of an increase in minimum wage. However, this decrease was not found to be statistically significant. Additionally, we were not able to be 95% confident that there was a true population decrease in youth employment during this time period.
+
+As a comparison, we also tested a similar hypothesis for Alberta.
+
+$$
+H_0: p_{employABpost}-p_{employABpre}\geq 0
+$$
+
+$$
+H_A: p_{employABpost}-p_{employABpre}< 0
+$$
+
+For this test the p-value was 0.5412. Since 0.5412 is greater than our stated value of $\alpha = 0.05$, we again failed to reject the null hypothesis. As a result, we were not able to conclude that there was a statistically significant decrease youth employment in Alberta during the same time as the post and pre treatment in Saskatchewan. Similar to Saskatchewan, a slight decrease was observed in the sample proportion for youth employment in Alberta in the same time period. Again this decrease was not found to be statistically significant. It appears that youth employment levels followed a similar trend in both Alberta and Saskatchewan in the time period studied. Since Alberta's minimum wage was constant during this time period, this suggests that the observed trends in youth employment were likely a result of economic factors other than changes to minimum wage.
+
+While our findings do not support the classical economic theory that increases in minimum wage have negative impacts on youth employment, it is important to be aware of the limitations of our study. Our study only examined one instance of an increase to minimum wage in one province. To further examine the effect of minimum wage on youth employment in general, similar studies should be conducted for other instances of increases to minimum wage both in Saskatchewan and elsewhere. Additionally, this proportion test did not control for other variables that could have impacted youth employment in the time period. It is possible that other economic factors may have contributed to or mitigated the impacts of the increased minimum wage on youth employment in Saskatchewan.
