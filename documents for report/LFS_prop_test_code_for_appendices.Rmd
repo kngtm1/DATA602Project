@@ -1,0 +1,206 @@
+---
+title: "LFS_prop_test"
+output: html_document
+date: "2025-10-01"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## Data Preparation
+
+```{r}
+# creates a pre-treatment data set for July 2023 to June 2024
+lfsPRE.df = rbind(lfsJul2Dec23ABSK, lfsJan2Jun24ABSK)
+```
+
+```{r}
+# creates a post-treatment data set for July 2024 to June 2025
+lfsPOST.df = rbind(lfsJul2Dec24ABSK, lfsJan2Jun25ABSK)
+```
+
+```{r}
+# creates pre-treatment data set for Saskatchewan
+lfsSKPRE.df = lfsPRE.df %>%
+  filter(PROV == 47)
+```
+
+```{r}
+# creates post-treatment data set for Saskatchewan
+lfsSKPOST.df = lfsPOST.df %>%
+  filter(PROV == 47)
+```
+
+```{r}
+# creates pre-treatment data set for Alberta
+lfsABPRE.df = lfsPRE.df %>%
+  filter(PROV == 48)
+```
+
+```{r}
+# creates post-treatment data set for Alberta
+lfsABPOST.df = lfsPOST.df %>%
+  filter(PROV == 48)
+```
+
+## Data Visualization
+
+```{r}
+# adds a column to the dataframe for pre or post
+lfsSKPRE.df$period = "PRE"
+lfsSKPOST.df$period = "POST"
+# creates a dataframe for Saskatchewan for both time periods
+lfsSK.df = rbind(lfsSKPRE.df, lfsSKPOST.df)
+# adds a column to the dataframe for employed or not employed
+lfsSK.df$employ = ifelse(lfsSK.df$LFSSTAT == "1" |lfsSK.df$LFSSTAT == "2", "Employed", "Not Employed")
+# adds a column with Saskatchewan to the dataframe
+lfsSK.df$provname = "Saskatchewan"
+```
+
+```{r}
+# adds a column to the dataframe for pre or post
+lfsABPRE.df$period = "PRE"
+lfsABPOST.df$period = "POST"
+# creates a dataframe for Alberta for both time periods
+lfsAB.df = rbind(lfsABPRE.df, lfsABPOST.df)
+# adds a column to the dataframe for employed or not employed
+lfsAB.df$employ = ifelse(lfsAB.df$LFSSTAT == "1" |lfsAB.df$LFSSTAT == "2", "Employed", "Not Employed")
+# adds a column with Alberta to the dataframe
+lfsAB.df$provname = "Alberta"
+```
+
+```{r}
+lfs.df = rbind(lfsSK.df, lfsAB.df)
+```
+
+```{r}
+# plots the proportion of employed youth pre and post announcement for Alberta and Saskatchewan
+preandpostemp = ggplot(data=lfs.df, aes(x=period, fill = employ)) + geom_bar(position = "fill", na.rm=TRUE) + xlab("Time Period") + ylab("Proportion") + ggtitle("Proportion of Employed Youth by Time Period and Province") + facet_wrap(~provname)
+preandpostemp
+ggsave("preandpostemp.pdf", plot = preandpostemp, width = 6, height = 4, unit = "in")
+```
+
+## Condition Checking
+
+```{r}
+# calculates number of employed youth surveyed in Saskatchewan pre-treatment
+xempSKPRE = sum(lfsSKPRE.df$LFSSTAT == 1 | lfsSKPRE.df$LFSSTAT == 2)
+xempSKPRE
+# calculates total number of youth surveyed in Saskatchewan pre-treatment
+nempSKPRE = nrow(lfsSKPRE.df)
+nempSKPRE
+# calculates proportion of youth who are employed in Saskatchewan pre-treatment
+propempSKPRE = xempSKPRE / nempSKPRE
+propempSKPRE
+# calculates the value of np for Saskatchewan pre-treatment
+npSKPRE = nempSKPRE * propempSKPRE
+npSKPRE
+# calculates the value of n(1-p) for Saskatchewan pre-treatment
+nqSKPRE = nempSKPRE *(1 - propempSKPRE)
+nqSKPRE
+```
+
+```{r}
+# calculates number of employed youth surveyed in Saskatchewan post-treatment
+xempSKPOST = sum(lfsSKPOST.df$LFSSTAT == 1 | lfsSKPOST.df$LFSSTAT == 2)
+xempSKPOST
+# calculates total number of youth surveyed in Saskatchewan post-treatment
+nempSKPOST = nrow(lfsSKPOST.df)
+nempSKPOST
+# calculates proportion of youth who are employed in Saskatchewan post-treatment
+propempSKPOST = xempSKPOST / nempSKPOST
+propempSKPOST
+# calculates the value of np for Saskatchewan post-treatment
+npSKPOST = nempSKPOST * propempSKPOST
+npSKPOST
+# calculates the value of n(1-p) for Saskatchewan post-treatment
+nqSKPOST = nempSKPOST *(1 - propempSKPOST)
+nqSKPOST
+```
+
+```{r}
+# calculates number of employed youth surveyed in Alberta pre-treatment
+xempABPRE = sum(lfsABPRE.df$LFSSTAT == 1 | lfsABPRE.df$LFSSTAT == 2)
+xempABPRE
+# calculates total number of youth surveyed in Alberta pre-treatment
+nempABPRE = nrow(lfsABPRE.df)
+nempABPRE
+# calculates proportion of youth who are employed in Alberta pre-treatment
+propempABPRE = xempABPRE / nempABPRE
+propempABPRE
+# calculates the value of np for Alberta pre-treatment
+npABPRE = nempABPRE * propempABPRE
+npABPRE
+# calculates the value of n(1-p) for Alberta pre-treatment
+nqABPRE = nempABPRE *(1 - propempABPRE)
+nqABPRE
+```
+
+```{r}
+# calculates number of employed youth surveyed in Alberta post-treatment
+xempABPOST = sum(lfsABPOST.df$LFSSTAT == 1 | lfsABPOST.df$LFSSTAT == 2)
+xempABPOST
+# calculates total number of youth surveyed in Alberta post-treatment
+nempABPOST = nrow(lfsABPOST.df)
+nempABPOST
+# calculates proportion of youth who are employed in Alberta post-treatment
+propempABPOST = xempABPOST / nempABPOST
+propempABPOST
+# calculates the value of np for Alberta post-treatment
+npABPOST = nempABPOST * propempABPOST
+npABPOST
+# calculates the value of n(1-p) for Alberta post-treatment
+nqABPOST = nempABPOST *(1 - propempABPOST)
+nqABPOST
+```
+
+## Data Analysis
+
+```{r}
+# calculates difference in proportion for youth employment post and pre treatment
+propempSKdiff = propempSKPOST - propempSKPRE
+propempSKdiff
+```
+
+```{r}
+# conducts a left sided proportion test on the difference in employment post and pre treatment
+prop.test(c(xempSKPOST + 1, xempSKPRE + 1), c(nempSKPOST + 2, nempSKPRE + 2), alternative = "less", correct = FALSE)
+```
+
+```{r}
+# calculates the observed value of z by square rooting the value of chi-squared
+# the observed difference in proportions is negative, so z observed is negative as well
+zobsSK = -1 *sqrt(0.74734)
+zobsSK
+```
+
+```{r}
+# calculates the 95% confidence interval for the difference in proportions
+prop.test(c(xempSKPOST + 1, xempSKPRE + 1), c(nempSKPOST + 2, nempSKPRE + 2), conf.level = 0.95, correct = FALSE)$conf
+```
+
+```{r}
+# calculates difference in proportion for youth employment post and pre treatment
+propempABdiff = propempABPOST - propempABPRE
+propempABdiff
+```
+
+```{r}
+# conducts a left sided proportion test on the difference in employment post and pre treatment
+prop.test(c(xempABPOST + 1, xempABPRE + 1), c(nempABPOST + 2, nempABPRE + 2), alternative = "less", correct = FALSE)
+```
+
+```{r}
+# calculates the observed value of z by square rooting the value of chi-squared
+# the observed difference in proportions is negative, so z observed is negative as well
+zobsAB = -1 *sqrt(0.01072)
+zobsAB
+```
+
+```{r}
+# calculates the 95% confidence interval for the difference in proportions
+prop.test(c(xempABPOST + 1, xempABPRE + 1), c(nempABPOST + 2, nempABPRE + 2), conf.level = 0.95, correct = FALSE)$conf
+```
