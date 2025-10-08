@@ -206,7 +206,7 @@ par(mfrow=c(1,1))
 Output:
 
 \begin{verbatim}
-[(TITLE OF HE OUTPUT) image to be included below]
+[(TITLE OF HE OUTPUT) image to be included below: timeseries1.pdf, timeseries2.pdf, timeseries3.pdf, timeseries4.pdf, timeseries5.pdf, timeseries6.pdf, scatter1.pdf, scatter2.pdf]
 \end{verbatim}
 
 \begin{figure}[h!]
@@ -240,4 +240,5 @@ Just open a PDF graphics device before the code creating the plot and close it a
 
 pdf("filename.pdf", width=8, height=5)  # Open PDF device with specified size
 YOUT GGPLOT CODE
+
 dev.off()  # Close PDF device and write the file
