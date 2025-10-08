@@ -1,0 +1,98 @@
+---
+title: "Matched_Pairs_Code"
+author: "Katelan Ng"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Data Cleaning
+```{r}
+months2023 = c(7,8,9,10,11,12)
+months2024 = c(1,2,3,4,5,6,7,8,9,10,11,12)
+months2025 = c(1,2,3,4,5,6)
+index = 1
+
+lfs_SK_prop = numeric(length(months2023)+length(months2024)+length(months2025))
+lfs_AB_prop = numeric(length(months2023)+length(months2024)+length(months2025))
+
+#Saskatchewan employment proportions from July 2023 - December 2023
+for (i in months2023) {
+  lfsdata_SK_month = lfsdata %>% filter(PROV == 47) %>% filter(SURVYEAR == 2023) %>% filter(SURVMNTH == i) 
+  lfsdata_SK_month_employed = lfsdata_SK_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_SK_prop[index] = nrow(lfsdata_SK_month_employed)/nrow(lfsdata_SK_month)
+  index = index + 1
+}
+
+#Saskatchewan employment proportions from January 2024 - December 2024
+for (i in months2024) {
+  lfsdata_SK_month = lfsdata %>% filter(PROV == 47) %>% filter(SURVYEAR == 2024) %>% filter(SURVMNTH == i)
+  lfsdata_SK_month_employed = lfsdata_SK_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_SK_prop[index] = nrow(lfsdata_SK_month_employed)/nrow(lfsdata_SK_month)
+  index = index + 1
+}
+
+#Saskatchewan employment proportions from January 2025 - June 2025
+for (i in months2025) {
+  lfsdata_SK_month = lfsdata %>% filter(PROV == 47) %>% filter(SURVYEAR == 2025) %>% filter(SURVMNTH == i)
+  lfsdata_SK_month_employed = lfsdata_SK_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_SK_prop[index] = nrow(lfsdata_SK_month_employed)/nrow(lfsdata_SK_month)
+  index = index + 1
+}
+
+#Alberta employment proportions from July 2023 - December 2023
+index = 1
+for (i in months2023) {
+  lfsdata_AB_month = lfsdata %>% filter(PROV == 48) %>% filter(SURVYEAR == 2023) %>% filter(SURVMNTH == i)
+  lfsdata_AB_month_employed = lfsdata_AB_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_AB_prop[index] = nrow(lfsdata_AB_month_employed)/nrow(lfsdata_AB_month)
+  index = index + 1
+}
+
+#Alberta employment proportions from January 2024 - December 2024
+for (i in months2024) {
+  lfsdata_AB_month = lfsdata %>% filter(PROV == 48) %>% filter(SURVYEAR == 2024) %>% filter(SURVMNTH == i)
+  lfsdata_AB_month_employed = lfsdata_AB_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_AB_prop[index] = nrow(lfsdata_AB_month_employed)/nrow(lfsdata_AB_month)
+  index = index + 1
+}
+
+#Alberta employment proportions from January 2025 - June 2025
+for (i in months2025) {
+  lfsdata_AB_month = lfsdata %>% filter(PROV == 48) %>% filter(SURVYEAR == 2025) %>% filter(SURVMNTH == i)
+  lfsdata_AB_month_employed = lfsdata_AB_month %>% filter(LFSSTAT == 1 | LFSSTAT == 2)
+  lfs_AB_prop[index] = nrow(lfsdata_AB_month_employed)/nrow(lfsdata_AB_month)
+  index = index + 1
+}
+```
+
+
+# Code for Graph 
+```{r}
+lfsdata_SK_AB_diff = lfs_SK_prop - lfs_AB_prop
+x_dates = c('Jul2023','Aug2023','Sep2023','Oct2023','Nov2023','Dec2023','Jan2024','February 2024','Mar2024','Apr2024','May2024','Jun2024','Jul2024','Aug2024','Sep2024','Oct2024','Nov2024','Dec2024','Jan2025','Feb2025','Mar2025','Apr2025','May2025','Jun2025')
+
+
+lfsdata.df <- data.frame(
+  Month = factor(x_dates, levels = x_dates),  # Ensure order is preserved
+  lfs_SK_prop,
+  lfs_AB_prop,
+  lfsdata_SK_AB_diff
+)
+
+library(ggplot2)
+
+ggplot(data = lfsdata.df, aes(x = Month, y = lfsdata_SK_AB_diff)) +
+  geom_line(group = 1, color = "red", size = 1) +
+  ggtitle("Employment Rate Difference: SK - AB") +
+  xlab("Month") +
+  ylab("Employment Rate Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+# Condition Checking
+```{r}
+lfsdata.df = data.frame(lfs_SK_prop,lfs_AB_prop,lfsdata_SK_AB_diff)
+ggplot(data=lfsdata.df, aes(sample = lfsdata_SK_AB_diff)) + stat_qq(size=2, col='blue') + stat_qq_line(col='red') + ggtitle("Normal Probability Plot of Difference: SK-AB") + xlab("Months") +ylab("Employement Rate Difference")
+```
+

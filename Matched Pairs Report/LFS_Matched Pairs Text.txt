@@ -1,0 +1,101 @@
+Guiding Question #1 - Is there a difference in the proportion of employed individuals between Alberta and Saskatchewan?
+
+1. Motivation and Statistical Hypothesis
+
+A perfect case study for observing the effects on youth unemployment rate arise from the economic policies of minimum wage in Alberta and Saskatchewan. Staging Alberta as our controlled variables – as Alberta's minimum wage has remained at $15.00 since Oct 1, 2018 – we compare this to Saskatchewan as our treatment variable, with their minimum wage increased from $14.00 to $15.00 on Oct 1, 2024.
+
+Following this, we aim to compare the difference in proportions. Mainly, we want to test if there is an observable difference in Alberta and Saskatchewan's monthly employment rate, specifically post-treatment. For this, we set up
+
+Hypothesis:
+
+$$
+H_{o}: μ_{SKEmploymentRate} = μ_{ABEmploymentRate}
+$$ $$
+H_{a}: μ_{SKEmploymentRate} \neq μ_{ABEmploymentRate}
+$$
+
+2. Data Preparation:
+
+The data filtered is comprised of several factors and assumptions needed to support our hypothesis testing:
+
+Youths
+
+Our goal is to observe the effects of youth unemployment rate, primarily filtering answers of those who responded to the survey and are 15-24.
+
+Months
+
+The "treatment" takes place when Saskatchewan announced the new minimum wage amount, which was sourced back to June 2024. To fully observe the effects, we are targeting the surveyed months one year before, and one year after the announcement date.
+
+Employment
+
+We define employment as individuals who responded to the survey with "Employed, at work" or "Employed, absent from work".
+
+
+| Month          | SK Youth Employment | AB Youth Employment | Difference |
+|----------------|---------------------|---------------------|------------|
+| July 2023      | 61.85%              | 58.80%              | 3.05%      |
+| August 2023    | 59.93%              | 54.69%              | 5.23%      |
+| September 2023 | 51.80%              | 45.58%              | 6.22%      |
+| October 2023   | 55.29%              | 49.61%              | 5.68%      |
+| November 2023  | 51.27%              | 49.10%              | 2.17%      |
+| December 2023  | 48.22%              | 50.76%              | -2.53%     |
+| January 2024   | 45.70%              | 48.29%              | -2.59%     |
+| February 2024  | 50.51%              | 50.80%              | -0.29%     |
+| March 2024     | 49.07%              | 49.51%              | -0.44%     |
+| April 2024     | 48.94%              | 48.26%              | 0.68%      |
+| May 2024       | 57.64%              | 54.99%              | 2.65%      |
+| June 2024      | 59.87%              | 54.94%              | 4.93%      |
+| July 2024      | 63.41%              | 57.64%              | 5.77%      |
+| August 2024    | 60.24%              | 56.91%              | 3.34%      |
+| September 2024 | 48.42%              | 47.75%              | 0.67%      |
+| October 2024   | 48.99%              | 48.86%              | 0.12%      |
+| November 2024  | 49.95%              | 49.67%              | 0.28%      |
+| December 2024  | 50.16%              | 53.07%              | -2.91%     |
+| January 2025   | 46.49%              | 49.60%              | -3.11%     |
+| February 2025  | 49.41%              | 48.82%              | 0.58%      |
+| March 2025     | 50.52%              | 47.77%              | 2.76%      |
+| April 2025     | 49.69%              | 48.93%              | 0.76%      |
+| May 2025       | 56.75%              | 53.25%              | 3.50%      |
+| June 2025      | 58.17%              | 54.43%              | 3.74%      |
+
+**INSERT Employment_Rate_Difference.pdf HERE**
+
+3. Condition Checking
+
+We have $n=24$ pairs of employment rates. First, we must determine if normality is met:
+
+**INSERT Normality_Plot.pdf HERE**
+
+From the plot, we can observe that the points follow the line of normality closely. From this, we will assume normality has been met. With the normality condition being satisfied, we can conduct a $T-test$ to test our hypothesis.
+
+4. Data Analysis
+
+We have met the sufficient requirements to conduct a Matched Pairs T-test, and the difference will be used as our primary target for this test. We will assume $\alpha = 0.05$.
+
+**CODE
+
+t.test(lfsdata_SK_AB_diff)
+
+**
+
+After performing the $T-test$, the observed test statistic is 2.8755, and the p-value is 0.9957. Since we assumed $α = 0.05$,
+
+$$
+p = 0.9957 > 0.05 = α
+$$
+
+We fail to reject the null hypothesis. From our statistical hypothesis, it is concluded that there is no difference between the employment rates of Saskatchewan and Alberta. Additionally, the confidence interval shows that Saskatchewan has a greater youth employment rate compared to Alberta.
+
+$$
+0.47\% < μ_{SKEmploymentRate} - μ_{ABEmploymentRate} < 2.88\%
+$$
+
+4. Discussion
+
+Recalling the hypothesis test:$$ H_{o}: μ_{SKEmploymentRate} = μ_{ABEmploymentRate} $$ $$ H_{a}: μ_{SKEmploymentRate} \neq μ_{ABEmploymentRate} $$
+
+Based on the previously mentioned p-value and confidence interval, we concluded that Saskatchewan has a higher youth employment rate compared to Alberta. Although the difference in employment rates between the two provinces is not substantial, these findings contradict our initial hypothesis. We originally predicted that Saskatchewan would experience a lower youth employment rate following the announcement of the minimum wage increase. However, our results do not support this claim.
+
+One limitation of the matched pairs test is that it does not account for temporal changes. Since the data was collected over a two-year period, methods that track temporal trends like Time Series would be more appropriate for capturing trends over time and could provide a more accurate assessment of Alberta and Saskatchewan's youth employment rate differences.
+
+Looking ahead, future research should explore events that could explain the fluctuations in the employment rates in Alberta and Saskatchewan. Annual occurances such as the start of the school year or graduation would explain the variation in months. Incorporating these additional assumptions into future testing could produce a more accurate test.
