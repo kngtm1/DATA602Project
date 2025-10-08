@@ -207,7 +207,7 @@ mtext("Youth Employment rate", side=4, line=3, col="red")
 Output:
 
 \begin{verbatim}
-[(TITLE OF HE OUTPUT) image to be included below: timeseries1.pdf, timeseries2.pdf, timeseries3.pdf, timeseries4.pdf, timeseries5.pdf, timeseries6.pdf, scatter1.pdf, scatter2.pdf]
+[(TITLE OF HE OUTPUT) image to be included below]
 \end{verbatim}
 
 \begin{figure}[h!]
@@ -223,13 +223,25 @@ Interpretation for timeseries1, timeseries2, timeseries3, timeseries4 (Visualiza
 First we can use a time series to visualize the employment rate change over the past two years (July 2023 to June 2025) for young employers and adult employers in two provinces Alberta and Saskatchewan as control groups.
 From all four plots showing different employment rate trend, all the employment rate changes over the 24 months period seem not very steady. But the variation is actually not that large. By inspection of these plots, we can see that for both provinces, the overall youth employment rate are generally lower than the adult employment rate. In all these four plots, the red vertical line indicates the time that the government of Saskatchewan announces the minimum wage increase which is around July 2024. We can see that the adult employment rate in Saskatchewan seems to having a positive trend after the announcement, but the youth employment rate seems not to be affected.
 
+\begin{verbatim}
+[(TITLE OF HE OUTPUT) image to be included below: timeseries1.pdf, timeseries2.pdf, timeseries3.pdf, timeseries4.pdf]
+\end{verbatim}
+
 Interpretation for timeseries5, timeseries6 (Visualization 2):
 For another visualization, we can look at the difference between the youth employment rate and the adult employment rate in both provinces to see a more clear relationship between these employment rates.
+
+\begin{verbatim}
+[(TITLE OF HE OUTPUT) image to be included below: timeseries5.pdf, timeseries6.pdf]
+\end{verbatim}
 
 Hence from both plots, we can clearly observe the difference between the youth employment rate and the adult employment rate in both provinces. Both of the trends seems to be in a negative range which is another indication that the youth employment rate is generally lower than the adult employment rate in both provinces over the 24 months period. 
 
 Interpretation for scatter1, scatter2 (Visualization 3):
 We want to compare the 12-month pre/post minimum wage raise differences between youth employment rate. By using two scatter plots where the left plot shows the hourly wages trend and the youth employment rate trend from the pre 12-month window (July 2023 to June 2024), the right plot shows the hourly wages trend and the youth employment rate trend from the post 12-month window (July 2024 to June 2025).
+
+\begin{verbatim}
+[(TITLE OF HE OUTPUT) image to be included below: scatter1.pdf, scatter2.pdf]
+\end{verbatim}
 
 By observing these two comparison plots, we can see after the announcement of minimum wage raise in Saskatchewan, there is a small period of time between January to July when the employment rate of young people seem to have a decreasing trend but rises afterwards. This supports what our originally assumption that the youth employment rate will fall after the minimum wage raise. But the trend shows after a period of time, the employment rate among young people started to increase again. This may be an indication that the employment rate is only affected by the minimum wage raise for a short time.
 
@@ -241,4 +253,5 @@ Just open a PDF graphics device before the code creating the plot and close it a
 
 pdf("filename.pdf", width=8, height=5)  # Open PDF device with specified size
 YOUT GGPLOT CODE
+
 dev.off()  # Close PDF device and write the file
